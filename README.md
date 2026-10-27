@@ -4,7 +4,7 @@
 素材・シャフト形状・重量・バランス・フェイス面積・フレーム厚・ストリングなどを選ぶと、
 性能スコア、スイングウェイト、ポジション適性、材料費の目安、製作難易度と手順をその場で計算します。
 
-Angular 21（Standalone Components / Signals / Zoneless）と TypeScript で構築しています。
+Angular 22（Standalone Components / Signals / Zoneless）と TypeScript 6 で構築しています。
 
 ## 機能
 
@@ -26,14 +26,14 @@ Angular 21（Standalone Components / Signals / Zoneless）と TypeScript で構�
 
 ## 開発
 
+Node.js 24 LTS（22.22.3 以降でも可）が必要です。`.nvmrc` を置いてあるので、nvm をお使いの場合は `nvm use` で切り替えられます。
+
 ```bash
-npm install --legacy-peer-deps
+npm install
 npm start          # http://localhost:4200/
 npm test           # Vitest によるユニットテスト
 npm run build      # dist/ に本番ビルド
 ```
-
-> `--legacy-peer-deps` は、npm 10.9 系で jsdom の任意 peer 依存（canvas）の解決に失敗する既知の問題を避けるための指定です。
 
 ## ディレクトリ構成
 
