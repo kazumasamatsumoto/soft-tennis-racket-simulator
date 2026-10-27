@@ -1,0 +1,81 @@
+.guide {
+  display: grid;
+  gap: 0.8rem;
+
+  &__summary {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+  }
+
+  &__stat {
+    display: grid;
+    gap: 0.15rem;
+    padding: 0.6rem 0.7rem;
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    background: var(--surface);
+  }
+
+  &__stat-label {
+    font-size: 0.7rem;
+    color: var(--muted);
+  }
+
+  &__stat-value {
+    font-weight: 700;
+    font-size: 1.05rem;
+  }
+
+  &__stat-note {
+    font-size: 0.72rem;
+    color: var(--muted);
+  }
+
+  &__heading {
+    margin: 0.3rem 0 0;
+    font-size: 0.95rem;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+  }
+}
+
+.stars {
+  font-size: 1.1rem;
+  letter-spacing: 0.1em;
+
+  &__item {
+    color: var(--track);
+
+    &--filled {
+      color: var(--accent);
+    }
+  }
+}
+
+.steps {
+  margin: 0;
+  padding-left: 1.4rem;
+  display: grid;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+
+  &__item {
+    display: grid;
+    gap: 0.1rem;
+    line-height: 1.5;
+
+    span {
+      color: var(--muted);
+    }
+  }
+}
+
+.tips {
+  margin: 0;
+  padding-left: 1.2rem;
+  display: grid;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}

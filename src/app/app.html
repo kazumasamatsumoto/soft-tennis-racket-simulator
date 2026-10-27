@@ -1,0 +1,46 @@
+<header class="header">
+  <div class="header__inner">
+    <div>
+      <h1 class="header__title">ソフトテニス ラケット作成シミュレーター</h1>
+      <p class="header__lead">
+        素材・シャフト・重量・バランス・ストリングを選ぶと、性能スコアと材料費、製作難易度をその場で計算します。
+      </p>
+    </div>
+  </div>
+</header>
+
+<main class="layout">
+  <aside class="layout__form">
+    <app-design-form />
+  </aside>
+
+  <section class="layout__preview card">
+    <h2 class="card__title">プレビュー</h2>
+    <app-racket-preview [design]="design()" [profile]="profile()" />
+  </section>
+
+  <section class="layout__analysis">
+    <div class="card">
+      <h2 class="card__title">性能バランス</h2>
+      <app-performance-radar [scores]="profile().scores" />
+    </div>
+    <div class="card">
+      <h2 class="card__title">スペックシート</h2>
+      <app-spec-sheet [design]="design()" [profile]="profile()" />
+    </div>
+    <div class="card">
+      <h2 class="card__title">自作ガイド</h2>
+      <app-build-guide [design]="design()" [profile]="profile()" />
+    </div>
+    <div class="card">
+      <h2 class="card__title">保存と共有</h2>
+      <app-saved-designs />
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <p>
+    性能スコアは市販ラケットの傾向を基にした相対的な目安です。規定値は日本ソフトテニス連盟の用具規定を参考にしていますが、必ず最新の公式ルールブックをご確認ください。
+  </p>
+</footer>

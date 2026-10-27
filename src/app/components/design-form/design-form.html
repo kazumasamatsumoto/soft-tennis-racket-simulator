@@ -1,0 +1,192 @@
+<form class="design-form" (submit)="$event.preventDefault()">
+  <section class="panel">
+    <h2 class="panel__title">基本情報</h2>
+    <div class="field">
+      <label for="design-name">ラケット名</label>
+      <input
+        id="design-name"
+        type="text"
+        maxlength="40"
+        [value]="design().name"
+        (input)="onName($event)"
+      />
+    </div>
+    <div class="field">
+      <label for="design-preset">プリセットから始める</label>
+      <select id="design-preset" (change)="onPreset($event)">
+        <option value="">選択してください</option>
+        @for (preset of presets; track preset.id) {
+          <option [value]="preset.id">{{ preset.name }} — {{ preset.description }}</option>
+        }
+      </select>
+    </div>
+    <div class="field">
+      <span class="field__label">想定ポジション</span>
+      <div class="segmented" role="group" aria-label="想定ポジション">
+        @for (position of positions; track position.id) {
+          <button
+            type="button"
+            class="segmented__item"
+            [class.segmented__item--active]="design().targetPosition === position.id"
+            [attr.aria-pressed]="design().targetPosition === position.id"
+            (click)="onPosition(position.id)"
+          >
+            {{ position.name }}
+          </button>
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2 class="panel__title">フレーム</h2>
+    <div class="field">
+      <label for="design-material">素材</label>
+      <select id="design-material" [value]="design().materialId" (change)="onMaterial($event)">
+        @for (material of materials; track material.id) {
+          <option [value]="material.id" [selected]="material.id === design().materialId">
+            {{ material.name }}
+          </option>
+        }
+      </select>
+      <small class="field__hint">{{ selectedMaterial().description }}</small>
+    </div>
+
+    <div class="field">
+      <span class="field__label">シャフト</span>
+      <div class="segmented" role="group" aria-label="シャフト形状">
+        @for (shaft of shafts; track shaft.id) {
+          <button
+            type="button"
+            class="segmented__item"
+            [class.segmented__item--active]="design().shaftType === shaft.id"
+            [attr.aria-pressed]="design().shaftType === shaft.id"
+            (click)="onShaft(shaft.id)"
+          >
+            {{ shaft.name }}
+          </button>
+        }
+      </div>
+      <small class="field__hint">{{ selectedShaft().description }}</small>
+    </div>
+
+    <app-range-field
+      label="全長"
+      unit="mm"
+      [min]="limits.lengthMm.min"
+      [max]="limits.lengthMm.max"
+      [step]="limits.lengthMm.step"
+      [value]="design().lengthMm"
+      hint="規定上限は 700mm。市販品の多くは 690〜700mm。"
+      (valueChange)="store.update({ lengthMm: $event })"
+    />
+    <app-range-field
+      label="フレーム重量"
+      unit="g"
+      [min]="limits.weightG.min"
+      [max]="limits.weightG.max"
+      [step]="limits.weightG.step"
+      [value]="design().weightG"
+      hint="ストリングを除いた重量。前衛は軽め、後衛はやや重めが一般的。"
+      (valueChange)="store.update({ weightG: $event })"
+    />
+    <app-range-field
+      label="バランスポイント"
+      unit="mm"
+      [min]="limits.balanceMm.min"
+      [max]="limits.balanceMm.max"
+      [step]="limits.balanceMm.step"
+      [value]="design().balanceMm"
+      hint="グリップエンドからの距離。市販品は中心より 20mm ほどグリップ寄りが標準で、それより先端側ならトップヘビー。"
+      (valueChange)="store.update({ balanceMm: $event })"
+    />
+    <app-range-field
+      label="フェイス面積"
+      unit="平方インチ"
+      [min]="limits.faceSizeSqIn.min"
+      [max]="limits.faceSizeSqIn.max"
+      [step]="limits.faceSizeSqIn.step"
+      [value]="design().faceSizeSqIn"
+      hint="大きいほどパワーと許容性が増し、小さいほどコントロール重視。"
+      (valueChange)="store.update({ faceSizeSqIn: $event })"
+    />
+    <app-range-field
+      label="フレーム厚"
+      unit="mm"
+      [min]="limits.frameThicknessMm.min"
+      [max]="limits.frameThicknessMm.max"
+      [step]="limits.frameThicknessMm.step"
+      [value]="design().frameThicknessMm"
+      hint="厚いほど剛性と反発が増し、薄いほどしなりと打球感が増す。"
+      (valueChange)="store.update({ frameThicknessMm: $event })"
+    />
+  </section>
+
+  <section class="panel">
+    <h2 class="panel__title">ストリング</h2>
+    <div class="field">
+      <label for="design-pattern">ストリングパターン（縦 × 横）</label>
+      <select id="design-pattern" (change)="onPattern($event)">
+        @for (pattern of patterns; track pattern.id) {
+          <option [value]="pattern.id" [selected]="pattern.id === design().stringPattern">
+            {{ pattern.name }}
+          </option>
+        }
+      </select>
+      <small class="field__hint">{{ selectedPattern().description }}</small>
+    </div>
+    <div class="field">
+      <label for="design-string-material">ストリング素材</label>
+      <select id="design-string-material" (change)="onStringMaterial($event)">
+        @for (material of stringMaterials; track material.id) {
+          <option [value]="material.id" [selected]="material.id === design().stringMaterialId">
+            {{ material.name }}
+          </option>
+        }
+      </select>
+      <small class="field__hint">{{ selectedStringMaterial().description }}</small>
+    </div>
+    <app-range-field
+      label="テンション"
+      unit="ポンド"
+      [min]="limits.tensionLbs.min"
+      [max]="limits.tensionLbs.max"
+      [step]="limits.tensionLbs.step"
+      [value]="design().tensionLbs"
+      hint="ソフトテニスは 20〜35 ポンドが一般的。低いほど飛び、高いほど制御しやすい。"
+      (valueChange)="store.update({ tensionLbs: $event })"
+    />
+  </section>
+
+  <section class="panel">
+    <h2 class="panel__title">グリップとカラー</h2>
+    <div class="field">
+      <label for="design-grip">グリップサイズ</label>
+      <select id="design-grip" (change)="onGrip($event)">
+        @for (grip of grips; track grip.id) {
+          <option [value]="grip.id" [selected]="grip.id === design().gripSize">
+            {{ grip.name }}（周囲 約{{ grip.circumferenceMm }}mm）
+          </option>
+        }
+      </select>
+      <small class="field__hint">{{ selectedGrip().description }}</small>
+    </div>
+    <div class="colors">
+      @for (color of colorFields; track color.key) {
+        <label class="colors__item">
+          <input
+            type="color"
+            [value]="design().colors[color.key]"
+            (input)="onColor(color.key, $event)"
+          />
+          <span>{{ color.label }}</span>
+          <code>{{ design().colors[color.key] }}</code>
+        </label>
+      }
+    </div>
+  </section>
+
+  <div class="design-form__actions">
+    <button type="button" class="btn btn--ghost" (click)="store.reset()">初期値に戻す</button>
+  </div>
+</form>

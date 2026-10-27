@@ -1,0 +1,46 @@
+<div class="saved">
+  <div class="saved__actions">
+    <button type="button" class="btn btn--primary" (click)="save()">この設計を保存</button>
+    <button type="button" class="btn" (click)="copyShareUrl()">共有 URL をコピー</button>
+    <button type="button" class="btn" (click)="exportJson()">JSON 書き出し</button>
+    <label class="btn btn--file">
+      JSON 読み込み
+      <input type="file" accept="application/json,.json" (change)="importJson($event)" />
+    </label>
+  </div>
+
+  @if (message()) {
+    <p class="saved__message" role="status">{{ message() }}</p>
+  }
+
+  @if (saved().length === 0) {
+    <p class="saved__empty">
+      保存した設計はまだありません。気に入った構成ができたら保存しておきましょう。
+    </p>
+  } @else {
+    <ul class="saved__list">
+      @for (entry of saved(); track entry.id) {
+        <li class="saved__item">
+          <div class="saved__info">
+            <strong>{{ entry.design.name }}</strong>
+            <span class="saved__meta">{{ describe(entry) }}</span>
+            <time class="saved__date" [attr.datetime]="entry.savedAt">{{
+              formatDate(entry.savedAt)
+            }}</time>
+          </div>
+          <div class="saved__buttons">
+            <span
+              class="swatch"
+              [style.background]="entry.design.colors.frame"
+              aria-hidden="true"
+            ></span>
+            <button type="button" class="btn btn--small" (click)="load(entry)">読み込む</button>
+            <button type="button" class="btn btn--small btn--danger" (click)="remove(entry)">
+              削除
+            </button>
+          </div>
+        </li>
+      }
+    </ul>
+  }
+</div>

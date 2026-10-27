@@ -1,0 +1,232 @@
+@let g = geometry();
+@let d = design();
+<figure class="preview">
+  <svg
+    class="preview__svg"
+    [attr.viewBox]="g.viewBox"
+    role="img"
+    [attr.aria-label]="d.name + ' のプレビュー'"
+  >
+    <defs>
+      <clipPath [attr.id]="clipId">
+        <ellipse
+          [attr.cx]="g.faceCx"
+          [attr.cy]="g.faceCy"
+          [attr.rx]="g.faceRx - g.frameStroke / 2"
+          [attr.ry]="g.faceRy - g.frameStroke / 2"
+        />
+      </clipPath>
+    </defs>
+
+    <!-- 全長の中心とバランスポイント -->
+    <line
+      class="guide guide--center"
+      [attr.x1]="g.cx - g.faceRx - 30"
+      [attr.x2]="g.cx + g.faceRx + 20"
+      [attr.y1]="g.centerY"
+      [attr.y2]="g.centerY"
+    />
+    <text
+      class="guide-label"
+      [attr.x]="g.cx - g.faceRx - 32"
+      [attr.y]="g.centerY - 6"
+      text-anchor="start"
+    >
+      中心
+    </text>
+
+    <!-- ストリング -->
+    <g [attr.clip-path]="'url(#' + clipId + ')'" class="strings" [attr.stroke]="d.colors.strings">
+      @for (x of g.mains; track $index) {
+        <line
+          [attr.x1]="x"
+          [attr.x2]="x"
+          [attr.y1]="g.faceCy - g.faceRy"
+          [attr.y2]="g.faceCy + g.faceRy"
+        />
+      }
+      @for (y of g.crosses; track $index) {
+        <line
+          [attr.x1]="g.faceCx - g.faceRx"
+          [attr.x2]="g.faceCx + g.faceRx"
+          [attr.y1]="y"
+          [attr.y2]="y"
+        />
+      }
+    </g>
+
+    <!-- シャフト -->
+    <g
+      class="shaft"
+      fill="none"
+      [attr.stroke]="d.colors.frame"
+      [attr.stroke-width]="g.shaftStroke"
+      stroke-linecap="round"
+    >
+      @for (path of g.shaftPaths; track $index) {
+        <path [attr.d]="path" />
+      }
+    </g>
+    <g
+      class="shaft-accent"
+      fill="none"
+      [attr.stroke]="d.colors.accent"
+      [attr.stroke-width]="2"
+      stroke-linecap="round"
+      opacity="0.9"
+    >
+      @for (path of g.shaftPaths; track $index) {
+        <path [attr.d]="path" />
+      }
+    </g>
+
+    <!-- フレーム -->
+    <ellipse
+      class="frame"
+      fill="none"
+      [attr.cx]="g.faceCx"
+      [attr.cy]="g.faceCy"
+      [attr.rx]="g.faceRx"
+      [attr.ry]="g.faceRy"
+      [attr.stroke]="d.colors.frame"
+      [attr.stroke-width]="g.frameStroke"
+    />
+    <ellipse
+      class="frame-accent"
+      fill="none"
+      [attr.cx]="g.faceCx"
+      [attr.cy]="g.faceCy"
+      [attr.rx]="g.faceRx"
+      [attr.ry]="g.faceRy"
+      [attr.stroke]="d.colors.accent"
+      stroke-width="2.5"
+      [attr.stroke-dasharray]="d.shaftType === 'double' ? '22 14' : '40 20'"
+      opacity="0.9"
+    />
+    <path
+      class="bridge"
+      fill="none"
+      [attr.d]="g.bridgePath"
+      [attr.stroke]="d.colors.frame"
+      [attr.stroke-width]="g.frameStroke * 0.7"
+      stroke-linecap="round"
+    />
+
+    <!-- グリップ -->
+    <rect
+      class="grip"
+      [attr.x]="g.cx - g.gripRadius"
+      [attr.y]="g.gripTop"
+      [attr.width]="g.gripWidth"
+      [attr.height]="g.butt - g.gripTop"
+      [attr.rx]="6"
+      [attr.fill]="d.colors.grip"
+    />
+    <g class="grip-wrap" stroke="rgba(255,255,255,0.28)" stroke-width="2">
+      @for (y of gripWraps(); track $index) {
+        <line
+          [attr.x1]="g.cx - g.gripRadius"
+          [attr.x2]="g.cx + g.gripRadius"
+          [attr.y1]="y + 6"
+          [attr.y2]="y - 6"
+        />
+      }
+    </g>
+    <rect
+      class="end-cap"
+      [attr.x]="g.cx - g.gripRadius - 2"
+      [attr.y]="g.butt - 10"
+      [attr.width]="g.gripWidth + 4"
+      [attr.height]="12"
+      rx="3"
+      [attr.fill]="d.colors.accent"
+    />
+
+    <!-- バランスポイント -->
+    <g class="balance">
+      <polygon
+        [attr.points]="
+          g.cx -
+          g.faceRx -
+          26 +
+          ',' +
+          g.balanceY +
+          ' ' +
+          (g.cx - g.faceRx - 40) +
+          ',' +
+          (g.balanceY - 8) +
+          ' ' +
+          (g.cx - g.faceRx - 40) +
+          ',' +
+          (g.balanceY + 8)
+        "
+      />
+      <text
+        class="guide-label guide-label--strong"
+        [attr.x]="g.cx - g.faceRx - 44"
+        [attr.y]="g.balanceY + 4"
+        text-anchor="end"
+      >
+        BP {{ d.balanceMm }}mm
+      </text>
+    </g>
+
+    <!-- 寸法線: 全長 -->
+    <g class="dimension">
+      <line
+        [attr.x1]="g.dimensionX"
+        [attr.x2]="g.dimensionX"
+        [attr.y1]="g.top"
+        [attr.y2]="g.butt"
+      />
+      <line
+        [attr.x1]="g.dimensionX - 6"
+        [attr.x2]="g.dimensionX + 6"
+        [attr.y1]="g.top"
+        [attr.y2]="g.top"
+      />
+      <line
+        [attr.x1]="g.dimensionX - 6"
+        [attr.x2]="g.dimensionX + 6"
+        [attr.y1]="g.butt"
+        [attr.y2]="g.butt"
+      />
+      <text class="guide-label" [attr.x]="g.dimensionX + 10" [attr.y]="g.centerY + 4">
+        全長 {{ d.lengthMm }}mm
+      </text>
+    </g>
+
+    <!-- 寸法線: フェイス幅 -->
+    <g class="dimension">
+      <line
+        [attr.x1]="g.faceCx - g.faceRx"
+        [attr.x2]="g.faceCx + g.faceRx"
+        [attr.y1]="g.top - 18"
+        [attr.y2]="g.top - 18"
+      />
+      <line
+        [attr.x1]="g.faceCx - g.faceRx"
+        [attr.x2]="g.faceCx - g.faceRx"
+        [attr.y1]="g.top - 24"
+        [attr.y2]="g.top - 12"
+      />
+      <line
+        [attr.x1]="g.faceCx + g.faceRx"
+        [attr.x2]="g.faceCx + g.faceRx"
+        [attr.y1]="g.top - 24"
+        [attr.y2]="g.top - 12"
+      />
+      <text class="guide-label" [attr.x]="g.faceCx" [attr.y]="g.top - 24" text-anchor="middle">
+        フェイス幅 {{ profile().faceWidthMm }}mm / 高さ {{ profile().faceHeightMm }}mm
+      </text>
+    </g>
+  </svg>
+  <figcaption class="preview__caption">
+    <strong>{{ d.name }}</strong>
+    <span
+      >{{ d.faceSizeSqIn }} 平方インチ · {{ d.weightG }}g · {{ balanceLabel() }}（{{
+        profile().balanceOffsetMm > 0 ? '+' : ''
+      }}{{ profile().balanceOffsetMm }}mm）</span
+    >
+  </figcaption>
+</figure>

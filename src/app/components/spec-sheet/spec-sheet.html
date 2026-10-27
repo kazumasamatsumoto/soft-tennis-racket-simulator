@@ -1,0 +1,106 @@
+@let p = profile();
+<div class="spec">
+  @if (p.issues.length) {
+    <ul class="issues" aria-label="設計上の注意">
+      @for (issue of p.issues; track issue.message) {
+        <li class="issues__item" [class.issues__item--error]="issue.level === 'error'">
+          <span class="issues__badge">{{ issue.level === 'error' ? '規定外' : '注意' }}</span>
+          {{ issue.message }}
+        </li>
+      }
+    </ul>
+  } @else {
+    <p class="ok">規定の目安を満たしています。</p>
+  }
+
+  <p class="summary">{{ summary() }}</p>
+
+  <h3 class="spec__heading">性能スコア</h3>
+  <ul class="metrics">
+    @for (row of metricRows(); track row.key) {
+      <li class="metrics__row">
+        <span class="metrics__label">{{ row.label }}</span>
+        <span
+          class="metrics__bar"
+          role="meter"
+          [attr.aria-valuenow]="row.value"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          [attr.aria-label]="row.label"
+        >
+          <span class="metrics__fill" [style.width.%]="row.value"></span>
+        </span>
+        <span class="metrics__value">{{ row.value }}</span>
+      </li>
+    }
+  </ul>
+
+  <h3 class="spec__heading">ポジション適性</h3>
+  <ul class="positions">
+    @for (row of positionRows(); track row.id) {
+      <li class="positions__row" [class.positions__row--recommended]="row.isRecommended">
+        <span class="positions__label">
+          {{ row.label }}
+          @if (row.isRecommended) {
+            <span class="tag tag--primary">おすすめ</span>
+          }
+          @if (row.isTarget) {
+            <span class="tag">目標</span>
+          }
+        </span>
+        <span class="metrics__bar">
+          <span class="metrics__fill metrics__fill--position" [style.width.%]="row.value"></span>
+        </span>
+        <span class="metrics__value">{{ row.value }}</span>
+      </li>
+    }
+  </ul>
+  <p class="note">
+    目標ポジション「{{ targetLabel() }}」との適合度は <strong>{{ targetMatch() }}</strong> / 100
+    です。
+    @if (p.recommendedPosition !== design().targetPosition) {
+      現在の設計は「{{ recommendedLabel() }}」寄りになっています。
+    }
+  </p>
+
+  <h3 class="spec__heading">物理特性</h3>
+  <dl class="facts">
+    <div class="facts__item">
+      <dt>スイングウェイト（簡易）</dt>
+      <dd>{{ p.swingWeight }} kg·cm²</dd>
+    </div>
+    <div class="facts__item">
+      <dt>バランス</dt>
+      <dd>{{ balanceLabel() }}</dd>
+    </div>
+    <div class="facts__item">
+      <dt>フェイス寸法</dt>
+      <dd>幅 {{ p.faceWidthMm }}mm × 高さ {{ p.faceHeightMm }}mm</dd>
+    </div>
+    <div class="facts__item">
+      <dt>全長 / 重量</dt>
+      <dd>{{ design().lengthMm }}mm / {{ design().weightG }}g</dd>
+    </div>
+  </dl>
+
+  <h3 class="spec__heading">材料費の目安</h3>
+  <table class="cost">
+    <tbody>
+      @for (item of p.costBreakdown; track item.label) {
+        <tr>
+          <th scope="row">{{ item.label }}</th>
+          <td>¥{{ formatYen(item.yen) }}</td>
+        </tr>
+      }
+    </tbody>
+    <tfoot>
+      <tr>
+        <th scope="row">合計</th>
+        <td>¥{{ formatYen(p.estimatedCostYen) }}</td>
+      </tr>
+    </tfoot>
+  </table>
+  <p class="note">
+    金額は小ロットで材料を調達した場合の概算で、工具やストリングマシンの費用は含みません。
+  </p>
+</div>

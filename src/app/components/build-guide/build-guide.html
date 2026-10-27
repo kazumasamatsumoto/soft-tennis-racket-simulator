@@ -1,0 +1,36 @@
+@let p = profile();
+<div class="guide">
+  <div class="guide__summary">
+    <div class="guide__stat">
+      <span class="guide__stat-label">製作難易度</span>
+      <span class="stars" [attr.aria-label]="'難易度 ' + p.buildDifficulty + ' / 5'">
+        @for (filled of difficultyStars(); track $index) {
+          <span class="stars__item" [class.stars__item--filled]="filled">★</span>
+        }
+      </span>
+      <span class="guide__stat-note">{{ difficultyLabel() }}</span>
+    </div>
+    <div class="guide__stat">
+      <span class="guide__stat-label">作業時間の目安</span>
+      <span class="guide__stat-value">約 {{ p.buildHours }} 時間</span>
+      <span class="guide__stat-note">硬化や乾燥の待ち時間を除く</span>
+    </div>
+  </div>
+
+  <h3 class="guide__heading">{{ material().name }} での製作手順</h3>
+  <ol class="steps">
+    @for (step of steps(); track step.title) {
+      <li class="steps__item">
+        <strong>{{ step.title }}</strong>
+        <span>{{ step.detail }}</span>
+      </li>
+    }
+  </ol>
+
+  <h3 class="guide__heading">この設計へのアドバイス</h3>
+  <ul class="tips">
+    @for (tip of tips(); track tip) {
+      <li>{{ tip }}</li>
+    }
+  </ul>
+</div>
